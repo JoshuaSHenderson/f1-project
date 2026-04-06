@@ -22,7 +22,6 @@ function loadAppData(): Promise<AppData> {
   if (!appDataPromise) {
     appDataPromise = (async () => {
       const session = await getCurrentYearSession("Shanghai", "Race")
-      console.log("session", session)
       const teamChamptionship = await getTeamChampionship()
       console.log("teamChamptionship", teamChamptionship)
       const driversChamptionship = await getDriverChampionship()
