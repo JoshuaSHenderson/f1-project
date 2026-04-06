@@ -5,11 +5,7 @@ import type {
 } from "@/types/api.interfaces"
 import type { IFantasyLeague } from "@/types/FantasyLeague.interfaces"
 import { GetDriverChampionshipTableContent } from "./DriversChampionshipTable.helper"
-import type {
-  // IDriverRow,
-  IDriversChampionshipRows,
-} from "@/components/driversChampionshipTable/DriversChampionship.interfaces"
-
+import type { IDriversChampionshipRows } from "@/components/driversChampionshipTable/DriversChampionship.interfaces"
 import {
   Table,
   TableBody,
@@ -19,6 +15,9 @@ import {
   TableRow,
 } from "../ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import DriverPointsTable from "./driverPointsTable/DriverPointsTable"
+import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer"
+import { Button } from "../ui/button"
 
 interface IDriverChampionshipTableProps {
   session: ISession[]
@@ -72,7 +71,14 @@ export default function DriverChampionshipTable(
                   {team.FantasyTeamPrincipal}
                 </TableCell>
                 <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
-                  {team.Drivers.map((d) => d.DriverName).join(", ")}
+                  <Drawer direction="right">
+                    <DrawerTrigger>
+                      <Button variant="default">Driver Points</Button>
+                    </DrawerTrigger>
+                    <DrawerContent>
+                      <DriverPointsTable DriverRows={team.Drivers} />
+                    </DrawerContent>
+                  </Drawer>
                 </TableCell>
                 <TableCell className="text-right font-medium tabular-nums">
                   {team.TotalPoints}
