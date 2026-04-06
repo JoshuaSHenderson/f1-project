@@ -1,3 +1,5 @@
+import type { ISessionResult } from "./api.interfaces"
+
 interface IFantasyLeague {
     FantasyTeamPrincipal: string
     FantasyTeamName: string
@@ -5,4 +7,11 @@ interface IFantasyLeague {
     Teams: string[]
 }
 
-export type { IFantasyLeague }
+
+type SessionCircuitResults = {
+    circuit_key: number
+    circuit_short_name: string
+    sessionResults: ISessionResult[]
+}
+
+export type { IFantasyLeague, SessionCircuitResults }

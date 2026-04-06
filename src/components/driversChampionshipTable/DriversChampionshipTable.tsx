@@ -1,8 +1,4 @@
-import type {
-  IDriver,
-  IDriverChampionship,
-  ISession,
-} from "@/types/api.interfaces"
+import type { IDriver, IDriverChampionship } from "@/types/api.interfaces"
 import type { IFantasyLeague } from "@/types/FantasyLeague.interfaces"
 import { GetDriverChampionshipTableContent } from "./DriversChampionshipTable.helper"
 import type { IDriversChampionshipRows } from "@/components/driversChampionshipTable/DriversChampionship.interfaces"
@@ -16,14 +12,22 @@ import {
 } from "../ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import DriverPointsTable from "./driverPointsTable/DriverPointsTable"
-import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "../ui/drawer"
 import { Button } from "../ui/button"
+import { TableLoadingState } from "../ui/spinner"
 
 interface IDriverChampionshipTableProps {
-  Session: ISession[]
   Drivers: IDriver[]
   DriverChampionship: IDriverChampionship[]
   FantasyLeague: IFantasyLeague[]
+  isLoading?: boolean
 }
 
 export default function DriverChampionshipTable(
@@ -44,6 +48,9 @@ export default function DriverChampionshipTable(
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {props.isLoading ? (
+          <TableLoadingState message="Loading fantasy standings…" />
+        ) : (
         <Table>
           <TableHeader>
             <TableRow className="border-b bg-muted/50 hover:bg-muted/50">
@@ -78,10 +85,16 @@ export default function DriverChampionshipTable(
                 </TableCell>
                 <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
                   <Drawer direction="right">
-                    <DrawerTrigger>
+                    <DrawerTrigger asChild>
                       <Button variant="default">Driver Points</Button>
                     </DrawerTrigger>
                     <DrawerContent>
+                      <DrawerHeader>
+                        <DrawerTitle>Driver points</DrawerTitle>
+                        <DrawerDescription>
+                          Breakdown for {team.FantasyTeamName}.
+                        </DrawerDescription>
+                      </DrawerHeader>
                       <DriverPointsTable
                         DriverRows={[...team.Drivers].sort(
                           (a, b) => b.DriverPoints - a.DriverPoints
@@ -97,6 +110,7 @@ export default function DriverChampionshipTable(
             ))}
           </TableBody>
         </Table>
+        )}
       </CardContent>
     </Card>
   )

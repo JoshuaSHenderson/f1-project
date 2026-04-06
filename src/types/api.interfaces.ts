@@ -63,6 +63,19 @@ interface ICarData {
     "throttle": number
 }
 
+interface ISessionResult {
+    "dnf": boolean
+    "dns": boolean
+    "dsq": boolean
+    "driver_number": number,
+    "duration": number,
+    "gap_to_leader": string,
+    "number_of_laps": number,
+    "meeting_key": number,
+    "position": number,
+    "session_key": number
+}
+
 export type {
-    ISession, IDriver, IDriverChampionship, ITeamChampionship, ICarData
+    ISession, IDriver, IDriverChampionship, ITeamChampionship, ICarData, ISessionResult
 }
