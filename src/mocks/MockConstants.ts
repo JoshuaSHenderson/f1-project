@@ -5,7 +5,7 @@ const MOCK_FANTASY_LEAGUE: IFantasyLeague[] = [
     {
         FantasyTeamPrincipal: "Rachel",
         FantasyTeamName: "IF IF IF",
-        DriverNumbers: [33, 6, 81, 27, 77],
+        DriverNumbers: [3, 6, 81, 27, 77],
         Teams: ["Red Bull", "Haas"],
     },
     {
