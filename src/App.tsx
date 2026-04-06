@@ -7,6 +7,7 @@ import {
 } from "@/api/OpenF1API"
 import { default as DriversTable } from "@/components/driversChampionshipTable/DriversChampionshipTable"
 import { MOCK_FANTASY_LEAGUE } from "./mocks/MockConstants"
+import FullDriversChampionshipTable from "./components/fullDriversChampionshipTable.tsx/FullDriversChampionshipTable"
 
 type AppData = {
   session: Awaited<ReturnType<typeof getCurrentYearSession>>
@@ -44,12 +45,19 @@ export function App() {
   return (
     <div className="min-h-svh items-center p-6">
       <div className="flex min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div className="mx-auto w-full max-w-4xl">
+        <div className="mx-auto w-full max-w-7xl">
           <DriversTable
-            session={appData?.session ? [appData.session] : []}
-            drivers={appData?.drivers ?? []}
-            driverChampionship={appData?.driversChamptionship ?? []}
-            fantasyLeague={MOCK_FANTASY_LEAGUE}
+            Session={appData?.session ? [appData.session] : []}
+            Drivers={appData?.drivers ?? []}
+            DriverChampionship={appData?.driversChamptionship ?? []}
+            FantasyLeague={MOCK_FANTASY_LEAGUE}
+          />
+        </div>
+        <div className="mx-auto w-full max-w-7xl">
+          <FullDriversChampionshipTable
+            Session={appData?.session ? [appData.session] : []}
+            Drivers={appData?.drivers ?? []}
+            DriverChampionship={appData?.driversChamptionship ?? []}
           />
         </div>
       </div>

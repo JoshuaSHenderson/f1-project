@@ -20,10 +20,10 @@ import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer"
 import { Button } from "../ui/button"
 
 interface IDriverChampionshipTableProps {
-  session: ISession[]
-  drivers: IDriver[]
-  driverChampionship: IDriverChampionship[]
-  fantasyLeague: IFantasyLeague[]
+  Session: ISession[]
+  Drivers: IDriver[]
+  DriverChampionship: IDriverChampionship[]
+  FantasyLeague: IFantasyLeague[]
 }
 
 export default function DriverChampionshipTable(
@@ -31,22 +31,25 @@ export default function DriverChampionshipTable(
 ) {
   const driversDataTableRows: IDriversChampionshipRows[] =
     GetDriverChampionshipTableContent(
-      props.fantasyLeague,
-      props.drivers,
-      props.driverChampionship
-    )
+      props.FantasyLeague,
+      props.Drivers,
+      props.DriverChampionship
+    ).sort((a, b) => b.TotalPoints - a.TotalPoints)
 
   return (
     <Card>
       <CardHeader className="text-center">
         <CardTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-          Drivers Championship
+          Fantasy Drivers Championship
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow className="border-b bg-muted/50 hover:bg-muted/50">
+              <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                Position
+              </TableHead>
               <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 Fantasy Team Name
               </TableHead>
@@ -62,8 +65,11 @@ export default function DriverChampionshipTable(
             </TableRow>
           </TableHeader>
           <TableBody>
-            {driversDataTableRows.map((team) => (
+            {driversDataTableRows.map((team, index) => (
               <TableRow key={team.FantasyTeamName} className="even:bg-muted/30">
+                <TableCell className="font-medium text-foreground">
+                  {index + 1}
+                </TableCell>
                 <TableCell className="font-medium text-foreground">
                   {team.FantasyTeamName}
                 </TableCell>
@@ -76,7 +82,11 @@ export default function DriverChampionshipTable(
                       <Button variant="default">Driver Points</Button>
                     </DrawerTrigger>
                     <DrawerContent>
-                      <DriverPointsTable DriverRows={team.Drivers} />
+                      <DriverPointsTable
+                        DriverRows={[...team.Drivers].sort(
+                          (a, b) => b.DriverPoints - a.DriverPoints
+                        )}
+                      />
                     </DrawerContent>
                   </Drawer>
                 </TableCell>
