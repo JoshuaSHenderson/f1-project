@@ -73,7 +73,7 @@ export function App() {
           await getSessionResultsForSessions(
             sessions,
             undefined,
-            yearMeetings ?? undefined
+            yearMeetings ?? []
           )
         if (cancelled) return
 
