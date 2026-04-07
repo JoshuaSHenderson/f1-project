@@ -1,3 +1,24 @@
+/** Grand Prix weekend (OpenF1 `meetings` endpoint). Used for circuit image and official meeting name. */
+interface IMeeting {
+    circuit_key: number
+    circuit_info_url: string
+    circuit_image: string
+    circuit_short_name: string
+    circuit_type: string
+    country_code: string
+    country_flag: string
+    country_key: number
+    country_name: string
+    date_end: string
+    date_start: string
+    gmt_offset: string
+    location: string
+    meeting_key: number
+    meeting_name: string
+    meeting_official_name: string
+    year: number
+}
+
 interface ISession {
     "circuit_key": number
     "circuit_short_name": string
@@ -77,5 +98,11 @@ interface ISessionResult {
 }
 
 export type {
-    ISession, IDriver, IDriverChampionship, ITeamChampionship, ICarData, ISessionResult
+    IMeeting,
+    ISession,
+    IDriver,
+    IDriverChampionship,
+    ITeamChampionship,
+    ICarData,
+    ISessionResult,
 }

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import {
   getCurrentYearSession,
+  getCurrentYearMeetings,
   getTeamChampionship,
   getDriverChampionship,
   getDrivers,
-  getSessionResults,
+  getSessionResultsForSessions,
 } from "@/api/OpenF1API"
 import { default as DriversTable } from "@/components/driversChampionshipTable/DriversChampionshipTable"
 import { MOCK_FANTASY_LEAGUE } from "./mocks/MockConstants"
@@ -24,7 +25,8 @@ type AppData = {
 export function App() {
   const [appData, setAppData] = useState<AppData | undefined>()
   const [fantasyTableLoading, setFantasyTableLoading] = useState(true)
-  const [fullDriversTableLoading, setFullDriversTableLoading] = useState(true)
+  const [championshipTableLoading, setChampionshipTableLoading] = useState(true)
+  const [sessionResultsLoading, setSessionResultsLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
@@ -34,12 +36,14 @@ export function App() {
         const [
           raceSessions,
           sprintSessions,
+          yearMeetings,
           teamChampionship,
           driversChamptionship,
           drivers,
         ] = await Promise.all([
           getCurrentYearSession("Race"),
           getCurrentYearSession("Sprint"),
+          getCurrentYearMeetings(),
           getTeamChampionship(),
           getDriverChampionship(),
           getDrivers(),
@@ -49,7 +53,11 @@ export function App() {
         const merged = [...(raceSessions ?? []), ...(sprintSessions ?? [])]
         const sessions: ISession[] = [
           ...new Map(merged.map((s) => [s.session_key, s])).values(),
-        ]
+        ].sort((a, b) => {
+          const ta = new Date(String(a.date_start)).getTime()
+          const tb = new Date(String(b.date_start)).getTime()
+          return tb - ta
+        })
 
         setAppData({
           sessions,
@@ -59,21 +67,14 @@ export function App() {
           sessionResults: [],
         })
         setFantasyTableLoading(false)
+        setChampionshipTableLoading(false)
 
-        const allSessionResults = (
-          await Promise.all(
-            sessions.map(async (s) => {
-              const results = await getSessionResults(s.session_key)
-              if (results == null || results.length === 0) return null
-              return {
-                circuit_key: s.circuit_key,
-                circuit_short_name: s.circuit_short_name,
-                sessionResults: results,
-              }
-            })
+        const sessionResults: SessionCircuitResults[] =
+          await getSessionResultsForSessions(
+            sessions,
+            undefined,
+            yearMeetings ?? undefined
           )
-        ).filter((b): b is SessionCircuitResults => b != null)
-        const sessionResults = allSessionResults.flatMap((b) => b)
         if (cancelled) return
 
         setAppData((prev) => (prev ? { ...prev, sessionResults } : undefined))
@@ -81,7 +82,8 @@ export function App() {
         console.error("Failed to load app data", e)
       } finally {
         if (!cancelled) {
-          setFullDriversTableLoading(false)
+          setChampionshipTableLoading(false)
+          setSessionResultsLoading(false)
           setFantasyTableLoading(false)
         }
       }
@@ -109,7 +111,8 @@ export function App() {
             Sessions={appData?.sessions ?? []}
             Drivers={appData?.drivers ?? []}
             DriverChampionship={appData?.driversChamptionship ?? []}
-            isLoading={fullDriversTableLoading}
+            isLoading={championshipTableLoading}
+            isSessionResultsLoading={sessionResultsLoading}
           />
         </div>
       </div>

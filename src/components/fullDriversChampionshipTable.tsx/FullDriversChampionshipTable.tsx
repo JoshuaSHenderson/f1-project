@@ -23,7 +23,7 @@ import {
 } from "../ui/drawer"
 import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
-import { TableLoadingState } from "../ui/spinner"
+import { Spinner, TableLoadingState } from "../ui/spinner"
 import FullSessionResults from "./fullRaceResults/fullRaceResults"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
 
@@ -33,6 +33,7 @@ interface IFullDriversChampionshipTableProps {
   Sessions: ISession[]
   DriverChampionship: IDriverChampionship[]
   isLoading?: boolean
+  isSessionResultsLoading?: boolean
 }
 
 export default function FullDriversChampionshipTable(
@@ -123,7 +124,16 @@ export default function FullDriversChampionshipTable(
                     <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
                       <Drawer direction="bottom">
                         <DrawerTrigger asChild>
-                          <Button variant="default">Full Race Results</Button>
+                          <Button variant="default" className="gap-2">
+                            {props.isSessionResultsLoading ? (
+                              <>
+                                <Spinner className="size-4 border-2" />
+                                Loading…
+                              </>
+                            ) : (
+                              "Full Race Results"
+                            )}
+                          </Button>
                         </DrawerTrigger>
                         <DrawerContent>
                           <DrawerHeader>
@@ -139,6 +149,7 @@ export default function FullDriversChampionshipTable(
                             Driver={driver}
                             SessionResults={props.SessionCircuitResults}
                             Sessions={props.Sessions}
+                            isLoading={props.isSessionResultsLoading}
                           />
                         </DrawerContent>
                       </Drawer>
