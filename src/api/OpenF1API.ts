@@ -126,7 +126,7 @@ export async function getCarData(driverNumber: number, sessionKey: number): Prom
 
 export async function getCurrentYearSession(sessionName: string): Promise<ISession[] | undefined> {
     const year = new Date().getFullYear()
-    const yearAndDay = new Date().toISOString()
+    const yearAndDay = new Date().toISOString() // 'YYYY-MM-DD' string
     const response = await fetchWithRetry(
         _apiRoot + `sessions?session_name=${sessionName}&year=${year}&date_start<=${yearAndDay}`,
         5
@@ -163,10 +163,11 @@ const DEFAULT_SESSION_RESULT_CONCURRENCY = 7
 export async function getSessionResultsForSessions(
     sessions: ISession[],
     concurrency: number = DEFAULT_SESSION_RESULT_CONCURRENCY,
-    meetings: IMeeting[]
+    meetings?: IMeeting[] | undefined
 ): Promise<SessionCircuitResults[]> {
+    const list = meetings ?? (await getCurrentYearMeetings())
     const meetingsByKey = new Map<number, IMeeting>(
-        (meetings ?? []).map((m) => [m.meeting_key, m])
+        (list ?? []).map((m) => [m.meeting_key, m])
     )
 
     const blocks = await mapPool(sessions, concurrency, async (s) => {
