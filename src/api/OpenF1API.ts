@@ -187,13 +187,13 @@ export async function getSessionResultsForSessions(
 }
 
 
-export async function getTeamChampionship(): Promise<ITeamChampionship | undefined> {
+export async function getTeamChampionship(): Promise<ITeamChampionship[] | undefined> {
     const response = await fetchWithRetry(
         _apiRoot + `championship_teams?meeting_key=latest`,
         5
     )
     if (response?.ok && response.body) {
-        return response.json() as Promise<ITeamChampionship>
+        return response.json() as Promise<ITeamChampionship[]>
     }
 }
 

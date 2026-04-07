@@ -12,6 +12,8 @@ import { MOCK_FANTASY_LEAGUE } from "./mocks/MockConstants"
 import FullDriversChampionshipTable from "./components/fullDriversChampionshipTable.tsx/FullDriversChampionshipTable"
 import type { ISession } from "./types/api.interfaces"
 import type { SessionCircuitResults } from "./types/FantasyLeague.interfaces"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs"
+import TeamsChampionshipTable from "./components/teamsChampionshipTable/TeamsChampionshipTable"
 
 type AppData = {
   /** Race and Sprint sessions for the current year (deduped by `session_key`). */
@@ -95,25 +97,38 @@ export function App() {
   }, [])
 
   return (
-    <div className="min-h-svh items-center p-6">
-      <div className="flex min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div className="mx-auto w-full max-w-7xl">
-          <DriversTable
-            Drivers={appData?.drivers ?? []}
-            DriverChampionship={appData?.driversChamptionship ?? []}
-            FantasyLeague={MOCK_FANTASY_LEAGUE}
-            isLoading={fantasyTableLoading}
-          />
-        </div>
-        <div className="mx-auto w-full max-w-7xl">
-          <FullDriversChampionshipTable
-            SessionCircuitResults={appData?.sessionResults ?? []}
-            Sessions={appData?.sessions ?? []}
-            Drivers={appData?.drivers ?? []}
-            DriverChampionship={appData?.driversChamptionship ?? []}
-            isLoading={championshipTableLoading}
-            isSessionResultsLoading={sessionResultsLoading}
-          />
+    <div className="min-h-svh p-6">
+      <div className="mx-auto w-full max-w-7xl min-w-0">
+        <div className="flex flex-col gap-4 text-sm leading-loose">
+          <Tabs defaultValue="drivers" className="w-full">
+            <TabsList className="mx-auto">
+              <TabsTrigger value="drivers">Drivers Championship</TabsTrigger>
+              <TabsTrigger value="teams">Constructors Championship</TabsTrigger>
+            </TabsList>
+            <TabsContent value="drivers" className="mt-4 flex flex-col gap-4">
+              <DriversTable
+                Drivers={appData?.drivers ?? []}
+                DriverChampionship={appData?.driversChamptionship ?? []}
+                FantasyLeague={MOCK_FANTASY_LEAGUE}
+                isLoading={fantasyTableLoading}
+              />
+              <FullDriversChampionshipTable
+                SessionCircuitResults={appData?.sessionResults ?? []}
+                Sessions={appData?.sessions ?? []}
+                Drivers={appData?.drivers ?? []}
+                DriverChampionship={appData?.driversChamptionship ?? []}
+                isLoading={championshipTableLoading}
+                isSessionResultsLoading={sessionResultsLoading}
+              />
+            </TabsContent>
+            <TabsContent value="teams" className="mt-4 flex flex-col gap-4">
+              <TeamsChampionshipTable
+                FantasyLeague={MOCK_FANTASY_LEAGUE}
+                TeamChampionship={appData?.teamChampionship ?? []}
+                IsLoading={championshipTableLoading}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

@@ -6,13 +6,13 @@ const MOCK_FANTASY_LEAGUE: IFantasyLeague[] = [
         FantasyTeamPrincipal: "Rachel",
         FantasyTeamName: "IF IF IF",
         DriverNumbers: [3, 6, 81, 27, 77],
-        Teams: ["Red Bull", "Haas"],
+        Teams: ["Red Bull Racing", "Haas F1 Team"],
     },
     {
         FantasyTeamPrincipal: "DJ",
         FantasyTeamName: "It's NEAR a fish!",
         DriverNumbers: [1, 12, 23, 11, 41],
-        Teams: ["Mercedes", "VCARB"],
+        Teams: ["Mercedes", "Racing Bulls"],
     },
     {
         FantasyTeamPrincipal: "Josh",
@@ -24,7 +24,7 @@ const MOCK_FANTASY_LEAGUE: IFantasyLeague[] = [
         FantasyTeamPrincipal: "Sabrina",
         FantasyTeamName: "Do P3, yeah!",
         DriverNumbers: [63, 55, 87, 31, 30],
-        Teams: ["Mclaren", "Williams"],
+        Teams: ["McLaren", "Williams"],
     },
 ]
 
