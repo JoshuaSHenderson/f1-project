@@ -63,7 +63,7 @@ export default function FullDriversChampionshipTable(
         {props.isLoading ? (
           <TableSkeleton
             numberOfColumns={5}
-            numberOfRows={props.Drivers.length}
+            numberOfRows={props.Drivers.length > 1 ? props.Drivers.length : 5}
           />
         ) : (
           <Table>

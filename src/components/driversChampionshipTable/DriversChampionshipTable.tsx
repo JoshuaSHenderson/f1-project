@@ -51,7 +51,9 @@ export default function DriverChampionshipTable(
         {props.isLoading ? (
           <TableSkeleton
             numberOfColumns={5}
-            numberOfRows={props.FantasyLeague.length}
+            numberOfRows={
+              props.FantasyLeague.length > 1 ? props.FantasyLeague.length : 5
+            }
           />
         ) : (
           <Table>
