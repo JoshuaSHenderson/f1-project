@@ -21,7 +21,7 @@ import {
   DrawerTrigger,
 } from "../ui/drawer"
 import { Button } from "../ui/button"
-import { TableLoadingState } from "../ui/spinner"
+import { TableSkeleton } from "../ui/skeleton"
 
 interface IDriverChampionshipTableProps {
   Drivers: IDriver[]
@@ -49,67 +49,73 @@ export default function DriverChampionshipTable(
       </CardHeader>
       <CardContent>
         {props.isLoading ? (
-          <TableLoadingState message="Loading fantasy standings…" />
+          <TableSkeleton
+            numberOfColumns={5}
+            numberOfRows={props.FantasyLeague.length}
+          />
         ) : (
-        <Table>
-          <TableHeader>
-            <TableRow className="border-b bg-muted/50 hover:bg-muted/50">
-              <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Position
-              </TableHead>
-              <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Fantasy Team Name
-              </TableHead>
-              <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Fantasy Team Principal
-              </TableHead>
-              <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Fantasy Team Drivers
-              </TableHead>
-              <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Total Points
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {driversDataTableRows.map((team, index) => (
-              <TableRow key={team.FantasyTeamName} className="even:bg-muted/30">
-                <TableCell className="font-medium text-foreground">
-                  {index + 1}
-                </TableCell>
-                <TableCell className="font-medium text-foreground">
-                  {team.FantasyTeamName}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {team.FantasyTeamPrincipal}
-                </TableCell>
-                <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
-                  <Drawer direction="right">
-                    <DrawerTrigger asChild>
-                      <Button variant="default">Driver Points</Button>
-                    </DrawerTrigger>
-                    <DrawerContent>
-                      <DrawerHeader>
-                        <DrawerTitle>Driver points</DrawerTitle>
-                        <DrawerDescription>
-                          Breakdown for {team.FantasyTeamName}.
-                        </DrawerDescription>
-                      </DrawerHeader>
-                      <DriverPointsTable
-                        DriverRows={[...team.Drivers].sort(
-                          (a, b) => b.DriverPoints - a.DriverPoints
-                        )}
-                      />
-                    </DrawerContent>
-                  </Drawer>
-                </TableCell>
-                <TableCell className="text-right font-medium tabular-nums">
-                  {team.TotalPoints}
-                </TableCell>
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b bg-muted/50 hover:bg-muted/50">
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                  Position
+                </TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                  Fantasy Team Name
+                </TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                  Fantasy Team Principal
+                </TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                  Fantasy Team Drivers
+                </TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                  Total Points
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {driversDataTableRows.map((team, index) => (
+                <TableRow
+                  key={team.FantasyTeamName}
+                  className="even:bg-muted/30"
+                >
+                  <TableCell className="font-medium text-foreground">
+                    {index + 1}
+                  </TableCell>
+                  <TableCell className="font-medium text-foreground">
+                    {team.FantasyTeamName}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {team.FantasyTeamPrincipal}
+                  </TableCell>
+                  <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
+                    <Drawer direction="right">
+                      <DrawerTrigger asChild>
+                        <Button variant="default">Driver Points</Button>
+                      </DrawerTrigger>
+                      <DrawerContent>
+                        <DrawerHeader>
+                          <DrawerTitle>Driver points</DrawerTitle>
+                          <DrawerDescription>
+                            Breakdown for {team.FantasyTeamName}.
+                          </DrawerDescription>
+                        </DrawerHeader>
+                        <DriverPointsTable
+                          DriverRows={[...team.Drivers].sort(
+                            (a, b) => b.DriverPoints - a.DriverPoints
+                          )}
+                        />
+                      </DrawerContent>
+                    </Drawer>
+                  </TableCell>
+                  <TableCell className="text-right font-medium tabular-nums">
+                    {team.TotalPoints}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </CardContent>
     </Card>

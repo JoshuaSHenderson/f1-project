@@ -210,7 +210,7 @@ export async function getDriverChampionship(): Promise<IDriverChampionship[] | u
 
 export async function getDrivers(): Promise<IDriver[] | undefined> {
     const response = await fetchWithRetry(
-        _apiRoot + `drivers?meeting_key=latest`,
+        _apiRoot + `drivers?session_key=latest`,
         5
     )
     if (response?.ok && response.body) {

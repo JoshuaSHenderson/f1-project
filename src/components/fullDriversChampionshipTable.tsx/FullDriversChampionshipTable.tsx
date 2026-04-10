@@ -23,9 +23,9 @@ import {
 } from "../ui/drawer"
 import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
-import { Spinner, TableLoadingState } from "../ui/spinner"
 import FullSessionResults from "./fullRaceResults/fullRaceResults"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
+import { SkeletonText, TableSkeleton } from "../ui/skeleton"
 
 interface IFullDriversChampionshipTableProps {
   SessionCircuitResults: SessionCircuitResults[]
@@ -61,7 +61,10 @@ export default function FullDriversChampionshipTable(
       </CardHeader>
       <CardContent>
         {props.isLoading ? (
-          <TableLoadingState message="Loading drivers and session results…" />
+          <TableSkeleton
+            numberOfColumns={5}
+            numberOfRows={props.Drivers.length}
+          />
         ) : (
           <Table>
             <TableHeader>
@@ -127,8 +130,7 @@ export default function FullDriversChampionshipTable(
                           <Button variant="default" className="gap-2">
                             {props.isSessionResultsLoading ? (
                               <>
-                                <Spinner className="size-4 border-2" />
-                                Loading…
+                                <SkeletonText />
                               </>
                             ) : (
                               "Full Race Results"
