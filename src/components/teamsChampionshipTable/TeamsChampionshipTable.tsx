@@ -1,7 +1,6 @@
 import type { ITeamChampionship } from "@/types/api.interfaces"
 import type { IFantasyLeague } from "@/types/FantasyLeague.interfaces"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { TableLoadingState } from "../ui/spinner"
 import {
   Table,
   TableBody,
@@ -22,6 +21,7 @@ import { Button } from "../ui/button"
 import { getTeamsChampionshipTableContent } from "./TeamsChampionshipTable.helper"
 import type { ITeamChampionshipRows } from "./TeamsChampionShipTable.interfaces"
 import TeamPointsTable from "./teamsPointsTable/TeamPointsTable"
+import { TableSkeleton } from "../ui/skeleton"
 
 interface ITeamsChampionshipTableProps {
   FantasyLeague: IFantasyLeague[]
@@ -47,7 +47,10 @@ export default function TeamsChampionshipTable(
       </CardHeader>
       <CardContent>
         {props.IsLoading ? (
-          <TableLoadingState message="Loading fantasy standings…" />
+          <TableSkeleton
+            numberOfColumns={5}
+            numberOfRows={props.FantasyLeague.length}
+          />
         ) : (
           <Table>
             <TableHeader>
