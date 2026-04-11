@@ -1,3 +1,4 @@
+import { getHighest } from "@/common/Helpers"
 import type {
     ICarData,
     IDriver,
@@ -80,7 +81,7 @@ async function fetchWithRetry(
             if (attempt < maxAttempts - 1) {
                 const backoffMs =
                     response.status === 429
-                        ? Math.min(1200 * 2 ** attempt, 16_000)
+                        ? Math.min(500 * 2 ** attempt, 1_000)
                         : jitterDelayMs()
                 await delay(backoffMs)
             }
@@ -188,33 +189,48 @@ export async function getSessionResultsForSessions(
 
 
 export async function getTeamChampionship(): Promise<ITeamChampionship[] | undefined> {
+
+    const apiQuery = `championship_teams`
+    const queryParams = `meeting_key`
     const response = await fetchWithRetry(
-        _apiRoot + `championship_teams?meeting_key=latest`,
+        _apiRoot + `${apiQuery}?${queryParams}=latest`,
+
         5
     )
     if (response?.ok && response.body) {
         return response.json() as Promise<ITeamChampionship[]>
+    } else {
+        return reAttemptGetLatest<ITeamChampionship>(`${apiQuery}`, "meeting_key")
     }
 }
 
 
 export async function getDriverChampionship(): Promise<IDriverChampionship[] | undefined> {
+    const apiQuery = `championship_drivers?`
+    const queryParams = `meeting_key`
     const response = await fetchWithRetry(
-        _apiRoot + `championship_drivers?meeting_key=latest`,
+        _apiRoot + `${apiQuery}?${queryParams}=latest`,
         5
     )
+
     if (response?.ok && response.body) {
         return response.json() as Promise<IDriverChampionship[]>
+    } else {
+        return reAttemptGetLatest<IDriverChampionship>(`${apiQuery}`, "meeting_key")
     }
 }
 
 export async function getDrivers(): Promise<IDriver[] | undefined> {
+    const apiQuery = `drivers`
+    const queryParams = `session_key`
     const response = await fetchWithRetry(
-        _apiRoot + `drivers?session_key=latest`,
+        _apiRoot + `${apiQuery}?${queryParams}=latest`,
         5
     )
     if (response?.ok && response.body) {
         return response.json() as Promise<IDriver[]>
+    } else {
+        return reAttemptGetLatest<IDriver>(`${apiQuery}`, queryParams)
     }
 }
 
@@ -225,5 +241,23 @@ export async function getCurrentYearMeetings(): Promise<IMeeting[] | undefined> 
     const response = await fetchWithRetry(_apiRoot + `meetings?year=${year}&date_start<=${yearAndDay}`, 5)
     if (response?.ok && response.body) {
         return response.json() as Promise<IMeeting[]>
+    }
+}
+
+// Re attempts an API call to get latest if the latest failes to return results (This is a bug in the API)
+async function reAttemptGetLatest<T extends object>(
+    apiQuery: string,
+    keyToUse: string
+): Promise<T[] | undefined> {
+    const response = await fetchWithRetry(_apiRoot + apiQuery, 5)
+
+    if (response?.ok && response.body) {
+        const data = (await response.json()) as T[]
+        const highestMeeting = getHighest(
+            data.map((d) => d[keyToUse as keyof T] as number)
+        )
+        return data.filter(
+            (d) => (d[keyToUse as keyof T] as number) === highestMeeting
+        )
     }
 }

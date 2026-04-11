@@ -127,15 +127,15 @@ export default function FullDriversChampionshipTable(
                     <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
                       <Drawer direction="bottom">
                         <DrawerTrigger asChild>
-                          <Button variant="default" className="gap-2">
-                            {props.isSessionResultsLoading ? (
-                              <>
-                                <SkeletonText />
-                              </>
-                            ) : (
-                              "Full Race Results"
-                            )}
-                          </Button>
+                          {props.isSessionResultsLoading ? (
+                            <>
+                              <SkeletonText />
+                            </>
+                          ) : (
+                            <Button variant="default" className="gap-2">
+                              Full Race Results
+                            </Button>
+                          )}
                         </DrawerTrigger>
                         <DrawerContent>
                           <DrawerHeader>
