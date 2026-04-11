@@ -81,7 +81,7 @@ async function fetchWithRetry(
             if (attempt < maxAttempts - 1) {
                 const backoffMs =
                     response.status === 429
-                        ? Math.min(1200 * 2 ** attempt, 16_000)
+                        ? Math.min(500 * 2 ** attempt, 1_000)
                         : jitterDelayMs()
                 await delay(backoffMs)
             }
