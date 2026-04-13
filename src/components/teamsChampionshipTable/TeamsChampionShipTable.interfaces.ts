@@ -1,10 +1,10 @@
-import type { ITeamChampionship } from "@/types/api.interfaces"
+import type { TeamChampionship } from "@/types/api.interfaces"
 
-interface ITeamChampionshipRows {
-    FantasyTeamName: string
-    FantasyTeamPrincipal: string
-    Teams: ITeamChampionship[]
-    TotalPoints: number
+interface TeamChampionshipRows {
+  fantasyTeamName: string
+  fantasyTeamPrincipal: string
+  teams: TeamChampionship[]
+  totalPoints: number
 }
 
-export type { ITeamChampionshipRows }
+export type { TeamChampionshipRows }

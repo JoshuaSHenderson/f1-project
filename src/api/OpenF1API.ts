@@ -1,12 +1,12 @@
 import { getHighest } from "@/common/Helpers"
 import type {
-    ICarData,
-    IDriver,
-    IDriverChampionship,
-    IMeeting,
-    ISession,
-    ISessionResult,
-    ITeamChampionship,
+    CarData,
+    Driver,
+    DriverChampionship,
+    Meeting,
+    Session,
+    SessionResult,
+    TeamChampionship,
 } from "../types/api.interfaces"
 import type { SessionCircuitResults } from "../types/FantasyLeague.interfaces"
 
@@ -112,20 +112,20 @@ function extendSessionResultCooldown(ms: number): void {
 
 
 
-export async function getCarData(driverNumber: number, sessionKey: number): Promise<ICarData | undefined> {
+export async function getCarData(driverNumber: number, sessionKey: number): Promise<CarData | undefined> {
 
     const response = await fetchWithRetry(
         _apiRoot + `car_data?driver_number=${driverNumber}&session_key=${sessionKey}`,
         5
     )
     if (response?.ok && response.body) {
-        return response.json() as Promise<ICarData>
+        return response.json() as Promise<CarData>
     }
 
 
 }
 
-export async function getCurrentYearSession(sessionName: string): Promise<ISession[] | undefined> {
+export async function getCurrentYearSession(sessionName: string): Promise<Session[] | undefined> {
     const year = new Date().getFullYear()
     const yearAndDay = new Date().toISOString() // 'YYYY-MM-DD' string
     const response = await fetchWithRetry(
@@ -133,14 +133,14 @@ export async function getCurrentYearSession(sessionName: string): Promise<ISessi
         5
     )
     if (response?.ok && response.body) {
-        return response.json() as Promise<ISession[]>
+        return response.json() as Promise<Session[]>
     }
 
 }
 
 
 
-export async function getSessionResults(sessionKey: number): Promise<ISessionResult[] | undefined> {
+export async function getSessionResults(sessionKey: number): Promise<SessionResult[] | undefined> {
     await waitForSessionResultCooldown()
     const response = await fetchWithRetry(
         _apiRoot + `session_result?session_key=${sessionKey}`,
@@ -148,7 +148,7 @@ export async function getSessionResults(sessionKey: number): Promise<ISessionRes
         { on429: () => extendSessionResultCooldown(2000) }
     )
     if (response?.ok && response.body) {
-        return response.json() as Promise<ISessionResult[]>
+        return response.json() as Promise<SessionResult[]>
     }
 }
 
@@ -162,12 +162,12 @@ const DEFAULT_SESSION_RESULT_CONCURRENCY = 7
  * Pass `meetings` when you already fetched them (e.g. in parallel with sessions) to save a round trip.
  */
 export async function getSessionResultsForSessions(
-    sessions: ISession[],
+    sessions: Session[],
     concurrency: number = DEFAULT_SESSION_RESULT_CONCURRENCY,
-    meetings?: IMeeting[] | undefined
+    meetings?: Meeting[] | undefined
 ): Promise<SessionCircuitResults[]> {
     const list = meetings ?? (await getCurrentYearMeetings())
-    const meetingsByKey = new Map<number, IMeeting>(
+    const meetingsByKey = new Map<number, Meeting>(
         (list ?? []).map((m) => [m.meeting_key, m])
     )
 
@@ -188,7 +188,7 @@ export async function getSessionResultsForSessions(
 }
 
 
-export async function getTeamChampionship(): Promise<ITeamChampionship[] | undefined> {
+export async function getTeamChampionship(): Promise<TeamChampionship[] | undefined> {
 
     const apiQuery = `championship_teams`
     const queryParams = `meeting_key`
@@ -198,14 +198,14 @@ export async function getTeamChampionship(): Promise<ITeamChampionship[] | undef
         5
     )
     if (response?.ok && response.body) {
-        return response.json() as Promise<ITeamChampionship[]>
+        return response.json() as Promise<TeamChampionship[]>
     } else {
-        return reAttemptGetLatest<ITeamChampionship>(`${apiQuery}`, "meeting_key")
+        return reAttemptGetLatest<TeamChampionship>(`${apiQuery}`, "meeting_key")
     }
 }
 
 
-export async function getDriverChampionship(): Promise<IDriverChampionship[] | undefined> {
+export async function getDriverChampionship(): Promise<DriverChampionship[] | undefined> {
     const apiQuery = `championship_drivers?`
     const queryParams = `meeting_key`
     const response = await fetchWithRetry(
@@ -214,13 +214,13 @@ export async function getDriverChampionship(): Promise<IDriverChampionship[] | u
     )
 
     if (response?.ok && response.body) {
-        return response.json() as Promise<IDriverChampionship[]>
+        return response.json() as Promise<DriverChampionship[]>
     } else {
-        return reAttemptGetLatest<IDriverChampionship>(`${apiQuery}`, "meeting_key")
+        return reAttemptGetLatest<DriverChampionship>(`${apiQuery}`, "meeting_key")
     }
 }
 
-export async function getDrivers(): Promise<IDriver[] | undefined> {
+export async function getDrivers(): Promise<Driver[] | undefined> {
     const apiQuery = `drivers`
     const queryParams = `session_key`
     const response = await fetchWithRetry(
@@ -228,19 +228,19 @@ export async function getDrivers(): Promise<IDriver[] | undefined> {
         5
     )
     if (response?.ok && response.body) {
-        return response.json() as Promise<IDriver[]>
+        return response.json() as Promise<Driver[]>
     } else {
-        return reAttemptGetLatest<IDriver>(`${apiQuery}`, queryParams)
+        return reAttemptGetLatest<Driver>(`${apiQuery}`, queryParams)
     }
 }
 
 
-export async function getCurrentYearMeetings(): Promise<IMeeting[] | undefined> {
+export async function getCurrentYearMeetings(): Promise<Meeting[] | undefined> {
     const year = new Date().getFullYear()
     const yearAndDay = new Date().toISOString()
     const response = await fetchWithRetry(_apiRoot + `meetings?year=${year}&date_start<=${yearAndDay}`, 5)
     if (response?.ok && response.body) {
-        return response.json() as Promise<IMeeting[]>
+        return response.json() as Promise<Meeting[]>
     }
 }
 

@@ -1,10 +1,5 @@
 import { useMemo } from "react"
-import type {
-  IDriver,
-  //   IDriverChampionship,
-  ISession,
-  ITeamChampionship,
-} from "@/types/api.interfaces"
+import type { Driver, Session, TeamChampionship } from "@/types/api.interfaces"
 import {
   Table,
   TableBody,
@@ -24,30 +19,29 @@ import {
 } from "../ui/drawer"
 import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
-// import FullSessionResults from "./fullRaceResults/fullRaceResults"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
 import { SkeletonText, TableSkeleton } from "../ui/skeleton"
 import FullTeamsSessionResults from "./fullTeamsRaceResults/FullTeamsRaceResults"
 import { cn } from "@/lib/utils"
 
-interface IFullDriversChampionshipTableProps {
-  SessionCircuitResults: SessionCircuitResults[]
-  Drivers: IDriver[]
-  Sessions: ISession[]
-  TeamChampionship: ITeamChampionship[]
+interface FullTeamsChampionshipTableProps {
+  sessionCircuitResults: SessionCircuitResults[]
+  drivers: Driver[]
+  sessions: Session[]
+  teamChampionship: TeamChampionship[]
   isLoading?: boolean
   isSessionResultsLoading?: boolean
 }
 
 export default function FullTeamsChampionshipTable(
-  props: IFullDriversChampionshipTableProps
+  props: FullTeamsChampionshipTableProps
 ) {
-  const TeamChamptionshipRows = useMemo(
+  const teamChampionshipRows = useMemo(
     () =>
-      [...props.TeamChampionship].sort(
+      [...props.teamChampionship].sort(
         (a, b) => b.points_current - a.points_current
       ),
-    [props.TeamChampionship]
+    [props.teamChampionship]
   )
 
   return (
@@ -62,8 +56,8 @@ export default function FullTeamsChampionshipTable(
           <TableSkeleton
             numberOfColumns={5}
             numberOfRows={
-              props.TeamChampionship.length > 1
-                ? props.TeamChampionship.length
+              props.teamChampionship.length > 1
+                ? props.teamChampionship.length
                 : 5
             }
           />
@@ -89,18 +83,18 @@ export default function FullTeamsChampionshipTable(
               </TableRow>
             </TableHeader>
             <TableBody>
-              {TeamChamptionshipRows.map((team, index) => {
-                const matchedDrivers = props.Drivers.filter(
+              {teamChampionshipRows.map((team, index) => {
+                const matchedDrivers = props.drivers.filter(
                   (d) => d.team_name === team.team_name
                 )
                 const matched = matchedDrivers[0]
-                const placesChange = formatPosistionsGainedOrLost(
-                  GetPositionsGainedOrLost(team)
+                const placesChange = formatPositionsGainedOrLost(
+                  getPositionsGainedOrLost(team)
                 )
 
                 return (
                   <TableRow key={team.team_name} className="even:bg-muted/30">
-                    {/* Posistion */}
+                    {/* Position */}
                     <TableCell className="font-medium text-foreground">
                       {index + 1}
                     </TableCell>
@@ -139,9 +133,9 @@ export default function FullTeamsChampionshipTable(
                             </DrawerDescription>
                           </DrawerHeader>
                           <FullTeamsSessionResults
-                            Drivers={matchedDrivers}
-                            SessionResults={props.SessionCircuitResults}
-                            Sessions={props.Sessions}
+                            drivers={matchedDrivers}
+                            sessionResults={props.sessionCircuitResults}
+                            sessions={props.sessions}
                             isLoading={props.isSessionResultsLoading}
                           />
                         </DrawerContent>
@@ -172,35 +166,32 @@ export default function FullTeamsChampionshipTable(
       </CardContent>
     </Card>
   )
+}
 
-  function GetPositionsGainedOrLost(
-    teamChampionship: ITeamChampionship
-  ): number {
-    return teamChampionship.position_start - teamChampionship.position_current
-  }
+function getPositionsGainedOrLost(teamChampionship: TeamChampionship): number {
+  return teamChampionship.position_start - teamChampionship.position_current
+}
 
-  function formatPosistionsGainedOrLost(change: number): {
-    label: string
-    className: string
-  } {
-    if (!Number.isFinite(change) || change === 0) {
-      return {
-        label: "—",
-        className:
-          "border-border bg-muted/80 text-muted-foreground font-normal",
-      }
-    }
-    if (change > 0) {
-      return {
-        label: `+${change}`,
-        className:
-          "border-emerald-500/40 bg-emerald-500/15 text-emerald-900 dark:border-emerald-400/35 dark:bg-emerald-500/20 dark:text-emerald-50",
-      }
-    }
+function formatPositionsGainedOrLost(change: number): {
+  label: string
+  className: string
+} {
+  if (!Number.isFinite(change) || change === 0) {
     return {
-      label: String(change),
-      className:
-        "border-red-500/40 bg-red-500/15 text-red-900 dark:border-red-400/35 dark:bg-red-500/20 dark:text-red-50",
+      label: "—",
+      className: "border-border bg-muted/80 text-muted-foreground font-normal",
     }
+  }
+  if (change > 0) {
+    return {
+      label: `+${change}`,
+      className:
+        "border-emerald-500/40 bg-emerald-500/15 text-emerald-900 dark:border-emerald-400/35 dark:bg-emerald-500/20 dark:text-emerald-50",
+    }
+  }
+  return {
+    label: String(change),
+    className:
+      "border-red-500/40 bg-red-500/15 text-red-900 dark:border-red-400/35 dark:bg-red-500/20 dark:text-red-50",
   }
 }

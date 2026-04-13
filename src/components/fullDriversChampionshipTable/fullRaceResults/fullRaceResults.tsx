@@ -7,22 +7,22 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import type { IDriverChampionship, ISession } from "@/types/api.interfaces"
+import type { DriverChampionship, Session } from "@/types/api.interfaces"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
 import { TableLoadingState } from "@/components/ui/spinner"
 import { cn } from "@/lib/utils"
 import { useMemo } from "react"
 
-interface IFullSessionResults {
-  SessionResults: SessionCircuitResults[]
-  Driver: IDriverChampionship
-  Sessions: ISession[]
+interface FullSessionResultsProps {
+  sessionResults: SessionCircuitResults[]
+  driver: DriverChampionship
+  sessions: Session[]
   isLoading?: boolean
 }
 
 type RowModel = {
   block: SessionCircuitResults
-  meta: ISession | undefined
+  meta: Session | undefined
 }
 
 function positionStyles(position: number | undefined): string {
@@ -38,14 +38,14 @@ function positionStyles(position: number | undefined): string {
   return "bg-muted/80 text-foreground"
 }
 
-export default function FullSessionResults(props: IFullSessionResults) {
+export default function FullSessionResults(props: FullSessionResultsProps) {
   const sessionsBySessionKey = useMemo(
-    () => new Map(props.Sessions.map((s) => [s.session_key, s])),
-    [props.Sessions]
+    () => new Map(props.sessions.map((s) => [s.session_key, s])),
+    [props.sessions]
   )
 
   const rows = useMemo(() => {
-    const list: RowModel[] = props.SessionResults.map((block) => {
+    const list: RowModel[] = props.sessionResults.map((block) => {
       const sessionKey = block.sessionResults[0]?.session_key
       const meta =
         sessionKey !== undefined
@@ -64,7 +64,7 @@ export default function FullSessionResults(props: IFullSessionResults) {
         : 0
       return tb - ta
     })
-  }, [props.SessionResults, sessionsBySessionKey])
+  }, [props.sessionResults, sessionsBySessionKey])
 
   if (props.isLoading && rows.length === 0) {
     return (
@@ -108,7 +108,7 @@ export default function FullSessionResults(props: IFullSessionResults) {
             {rows.map(({ block: session, meta }) => {
               const sessionKey = session.sessionResults[0]?.session_key
               const position = session.sessionResults.find(
-                (sr) => sr.driver_number === props.Driver.driver_number
+                (sr) => sr.driver_number === props.driver.driver_number
               )?.position
 
               return (
@@ -143,11 +143,16 @@ export default function FullSessionResults(props: IFullSessionResults) {
                           {session.meeting_name || "—"}
                         </p>
                         {meta?.session_name ? (
-                          <Badge variant="secondary" className="h-6 w-fit px-2 text-[11px]">
+                          <Badge
+                            variant="secondary"
+                            className="h-6 w-fit px-2 text-[11px]"
+                          >
                             {meta.session_name}
                           </Badge>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground">
+                            —
+                          </span>
                         )}
                       </div>
                     </div>

@@ -1,9 +1,5 @@
 import { useMemo } from "react"
-import type {
-  IDriver,
-  IDriverChampionship,
-  ISession,
-} from "@/types/api.interfaces"
+import type { Driver, DriverChampionship, Session } from "@/types/api.interfaces"
 import {
   Table,
   TableBody,
@@ -27,29 +23,29 @@ import FullSessionResults from "./fullRaceResults/fullRaceResults"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
 import { SkeletonText, TableSkeleton } from "../ui/skeleton"
 
-interface IFullDriversChampionshipTableProps {
-  SessionCircuitResults: SessionCircuitResults[]
-  Drivers: IDriver[]
-  Sessions: ISession[]
-  DriverChampionship: IDriverChampionship[]
+interface FullDriversChampionshipTableProps {
+  sessionCircuitResults: SessionCircuitResults[]
+  drivers: Driver[]
+  sessions: Session[]
+  driverChampionship: DriverChampionship[]
   isLoading?: boolean
   isSessionResultsLoading?: boolean
 }
 
 export default function FullDriversChampionshipTable(
-  props: IFullDriversChampionshipTableProps
+  props: FullDriversChampionshipTableProps
 ) {
   const driversByNumber = useMemo(
-    () => new Map(props.Drivers.map((d) => [d.driver_number, d])),
-    [props.Drivers]
+    () => new Map(props.drivers.map((d) => [d.driver_number, d])),
+    [props.drivers]
   )
 
   const driverChampionshipRows = useMemo(
     () =>
-      [...props.DriverChampionship].sort(
+      [...props.driverChampionship].sort(
         (a, b) => b.points_current - a.points_current
       ),
-    [props.DriverChampionship]
+    [props.driverChampionship]
   )
 
   return (
@@ -63,7 +59,7 @@ export default function FullDriversChampionshipTable(
         {props.isLoading ? (
           <TableSkeleton
             numberOfColumns={5}
-            numberOfRows={props.Drivers.length > 1 ? props.Drivers.length : 5}
+            numberOfRows={props.drivers.length > 1 ? props.drivers.length : 5}
           />
         ) : (
           <Table>
@@ -148,9 +144,9 @@ export default function FullDriversChampionshipTable(
                             </DrawerDescription>
                           </DrawerHeader>
                           <FullSessionResults
-                            Driver={driver}
-                            SessionResults={props.SessionCircuitResults}
-                            Sessions={props.Sessions}
+                            driver={driver}
+                            sessionResults={props.sessionCircuitResults}
+                            sessions={props.sessions}
                             isLoading={props.isSessionResultsLoading}
                           />
                         </DrawerContent>

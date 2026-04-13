@@ -7,22 +7,28 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import type { IDriver, ISession } from "@/types/api.interfaces"
+import type { Driver, Session } from "@/types/api.interfaces"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
 import { TableLoadingState } from "@/components/ui/spinner"
 import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 
-interface IFullTeamsSessionResults {
-  SessionResults: SessionCircuitResults[]
-  Drivers: IDriver[]
-  Sessions: ISession[]
+interface FullTeamsSessionResultsProps {
+  sessionResults: SessionCircuitResults[]
+  drivers: Driver[]
+  sessions: Session[]
   isLoading?: boolean
 }
 
 type RowModel = {
   block: SessionCircuitResults
-  meta: ISession | undefined
+  meta: Session | undefined
+}
+
+type TeamSessionDriverRow = {
+  driver: Driver
+  points: number
+  position: number
 }
 
 function positionStyles(position: number | undefined): string {
@@ -38,16 +44,27 @@ function positionStyles(position: number | undefined): string {
   return "bg-muted/80 text-foreground"
 }
 
+function positionToPoints(sessionType: string, position: number): number {
+  const racePointsByPosition = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1] as const
+  const sprintPointsByPosition = [8, 7, 6, 5, 4, 3, 2, 1, 0, 0] as const
+  if (position < 1 || position > 10) return 0
+  const table =
+    sessionType.toLocaleLowerCase() === "race"
+      ? racePointsByPosition
+      : sprintPointsByPosition
+  return table[position - 1] ?? 0
+}
+
 export default function FullTeamsSessionResults(
-  props: IFullTeamsSessionResults
+  props: FullTeamsSessionResultsProps
 ) {
   const sessionsBySessionKey = useMemo(
-    () => new Map(props.Sessions.map((s) => [s.session_key, s])),
-    [props.Sessions]
+    () => new Map(props.sessions.map((s) => [s.session_key, s])),
+    [props.sessions]
   )
 
   const rows = useMemo(() => {
-    const list: RowModel[] = props.SessionResults.map((block) => {
+    const list: RowModel[] = props.sessionResults.map((block) => {
       const sessionKey = block.sessionResults[0]?.session_key
       const meta =
         sessionKey !== undefined
@@ -66,7 +83,7 @@ export default function FullTeamsSessionResults(
         : 0
       return tb - ta
     })
-  }, [props.SessionResults, sessionsBySessionKey])
+  }, [props.sessionResults, sessionsBySessionKey])
 
   if (props.isLoading && rows.length === 0) {
     return (
@@ -114,26 +131,24 @@ export default function FullTeamsSessionResults(
           </TableHeader>
           <TableBody>
             {rows.map(({ block: session, meta }) => {
-              interface IDriverRow {
-                Driver: IDriver
-                Points: number
-                Position: number
-              }
-              const driverRows: IDriverRow[] = []
-              props.Drivers.map((d) => {
+              const driverRows: TeamSessionDriverRow[] = []
+              props.drivers.map((d) => {
                 const foundDriverResults = session.sessionResults.find(
                   (sr) => sr.driver_number === d.driver_number
                 )
                 const finishPosition = foundDriverResults?.position ?? 0
                 const driverPoints =
                   finishPosition != null
-                    ? positionToPoints(meta?.session_type ?? "", finishPosition)
+                    ? positionToPoints(
+                        meta?.session_type ?? "",
+                        finishPosition
+                      )
                     : 0
 
                 driverRows.push({
-                  Driver: d,
-                  Points: driverPoints,
-                  Position: finishPosition,
+                  driver: d,
+                  points: driverPoints,
+                  position: finishPosition,
                 })
               })
 
@@ -195,22 +210,22 @@ export default function FullTeamsSessionResults(
                   {/* Driver */}
                   <TableCell className="py-3 pr-4 text-right align-middle whitespace-normal">
                     <div className="flex min-w-0 flex-col gap-2">
-                      {driverRows.map((driver) => (
+                      {driverRows.map((row) => (
                         <div
-                          key={driver.Driver.driver_number}
+                          key={row.driver.driver_number}
                           className="flex min-w-0 items-center gap-2"
                         >
                           <img
-                            src={String(driver.Driver.headshot_url)}
+                            src={String(row.driver.headshot_url)}
                             alt={
-                              driver.Driver.full_name ??
-                              `Driver ${driver.Driver.driver_number}`
+                              row.driver.full_name ??
+                              `Driver ${row.driver.driver_number}`
                             }
                             className="h-10 w-10 shrink-0 rounded-full object-cover"
                           />
                           <span className="truncate">
-                            {driver.Driver.full_name ??
-                              `#${driver.Driver.driver_number}`}
+                            {row.driver.full_name ??
+                              `#${row.driver.driver_number}`}
                           </span>
                         </div>
                       ))}
@@ -219,18 +234,18 @@ export default function FullTeamsSessionResults(
                   {/* Results */}
                   <TableCell className="py-3 pr-4 text-right align-middle whitespace-normal">
                     <div className="flex min-w-0 flex-col gap-2">
-                      {driverRows.map((driver) => (
+                      {driverRows.map((row) => (
                         <div
-                          key={driver.Driver.driver_number}
+                          key={row.driver.driver_number}
                           className="flex min-w-0 items-center gap-2"
                         >
                           <span
                             className={cn(
                               "inline-flex min-w-11 justify-center rounded-lg px-2.5 py-1.5 text-base font-semibold tracking-tight tabular-nums",
-                              positionStyles(driver.Position)
+                              positionStyles(row.position)
                             )}
                           >
-                            {driver.Position}
+                            {row.position}
                           </span>
                         </div>
                       ))}
@@ -238,9 +253,9 @@ export default function FullTeamsSessionResults(
                   </TableCell>
                   {/* Points */}
                   <TableCell className="py-3 pr-4 text-right align-middle whitespace-normal">
-                    {driverRows.map((driver) => (
+                    {driverRows.map((row) => (
                       <div
-                        key={driver.Driver.driver_number}
+                        key={row.driver.driver_number}
                         className="flex min-w-0 items-center gap-2"
                       >
                         <span
@@ -248,7 +263,7 @@ export default function FullTeamsSessionResults(
                             "inline-flex min-w-11 justify-center rounded-lg px-2.5 py-1.5 text-base font-semibold tracking-tight tabular-nums"
                           )}
                         >
-                          {driver.Points}
+                          {row.points}
                         </span>
                       </div>
                     ))}
@@ -261,15 +276,4 @@ export default function FullTeamsSessionResults(
       </div>
     </div>
   )
-
-  function positionToPoints(sessionType: string, position: number): number {
-    const racePointsByPosition = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1] as const
-    const sprintPointsByPosition = [8, 7, 6, 5, 4, 3, 2, 1, 0, 0] as const
-    if (position < 1 || position > 10) return 0
-    const table =
-      sessionType.toLocaleLowerCase() === "race"
-        ? racePointsByPosition
-        : sprintPointsByPosition
-    return table[position - 1] ?? 0
-  }
 }

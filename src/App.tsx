@@ -9,8 +9,8 @@ import {
 } from "@/api/OpenF1API"
 import { default as DriversTable } from "@/components/driversChampionshipTable/DriversChampionshipTable"
 import { MOCK_FANTASY_LEAGUE } from "./mocks/MockConstants"
-import FullDriversChampionshipTable from "./components/fullDriversChampionshipTable.tsx/FullDriversChampionshipTable"
-import type { ISession } from "./types/api.interfaces"
+import FullDriversChampionshipTable from "@/components/fullDriversChampionshipTable/FullDriversChampionshipTable"
+import type { Session } from "./types/api.interfaces"
 import type { SessionCircuitResults } from "./types/FantasyLeague.interfaces"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs"
 import TeamsChampionshipTable from "./components/teamsChampionshipTable/TeamsChampionshipTable"
@@ -18,9 +18,9 @@ import FullTeamsChampionshipTable from "./components/fullTeamsChampionshipTable/
 
 type AppData = {
   /** Race and Sprint sessions for the current year (deduped by `session_key`). */
-  sessions: ISession[]
+  sessions: Session[]
   teamChampionship: Awaited<ReturnType<typeof getTeamChampionship>>
-  driversChamptionship: Awaited<ReturnType<typeof getDriverChampionship>>
+  driverChampionship: Awaited<ReturnType<typeof getDriverChampionship>>
   drivers: Awaited<ReturnType<typeof getDrivers>>
   sessionResults: SessionCircuitResults[]
 }
@@ -41,7 +41,7 @@ export function App() {
           sprintSessions,
           yearMeetings,
           teamChampionship,
-          driversChamptionship,
+          driverChampionship,
           drivers,
         ] = await Promise.all([
           getCurrentYearSession("Race"),
@@ -54,7 +54,7 @@ export function App() {
         if (cancelled) return
 
         const merged = [...(raceSessions ?? []), ...(sprintSessions ?? [])]
-        const sessions: ISession[] = [
+        const sessions: Session[] = [
           ...new Map(merged.map((s) => [s.session_key, s])).values(),
         ].sort((a, b) => {
           const ta = new Date(String(a.date_start)).getTime()
@@ -65,7 +65,7 @@ export function App() {
         setAppData({
           sessions,
           teamChampionship,
-          driversChamptionship,
+          driverChampionship,
           drivers,
           sessionResults: [],
         })
@@ -108,34 +108,34 @@ export function App() {
             </TabsList>
             <TabsContent value="drivers" className="mt-4 flex flex-col gap-4">
               <DriversTable
-                Drivers={appData?.drivers ?? []}
-                DriverChampionship={appData?.driversChamptionship ?? []}
-                FantasyLeague={MOCK_FANTASY_LEAGUE}
+                drivers={appData?.drivers ?? []}
+                driverChampionship={appData?.driverChampionship ?? []}
+                fantasyLeague={MOCK_FANTASY_LEAGUE}
                 isLoading={fantasyTableLoading}
               />
               <FullDriversChampionshipTable
-                SessionCircuitResults={appData?.sessionResults ?? []}
-                Sessions={appData?.sessions ?? []}
-                Drivers={appData?.drivers ?? []}
-                DriverChampionship={appData?.driversChamptionship ?? []}
+                sessionCircuitResults={appData?.sessionResults ?? []}
+                sessions={appData?.sessions ?? []}
+                drivers={appData?.drivers ?? []}
+                driverChampionship={appData?.driverChampionship ?? []}
                 isLoading={championshipTableLoading}
                 isSessionResultsLoading={sessionResultsLoading}
               />
             </TabsContent>
             <TabsContent value="teams" className="mt-4 flex flex-col gap-4">
               <TeamsChampionshipTable
-                FantasyLeague={MOCK_FANTASY_LEAGUE}
-                TeamChampionship={appData?.teamChampionship ?? []}
-                IsLoading={championshipTableLoading}
+                fantasyLeague={MOCK_FANTASY_LEAGUE}
+                teamChampionship={appData?.teamChampionship ?? []}
+                isLoading={championshipTableLoading}
               />
               <FullTeamsChampionshipTable
-                SessionCircuitResults={appData?.sessionResults ?? []}
-                Sessions={appData?.sessions ?? []}
-                Drivers={appData?.drivers ?? []}
-                TeamChampionship={appData?.teamChampionship ?? []}
+                sessionCircuitResults={appData?.sessionResults ?? []}
+                sessions={appData?.sessions ?? []}
+                drivers={appData?.drivers ?? []}
+                teamChampionship={appData?.teamChampionship ?? []}
                 isLoading={championshipTableLoading}
                 isSessionResultsLoading={sessionResultsLoading}
-              ></FullTeamsChampionshipTable>
+              />
             </TabsContent>
           </Tabs>
         </div>

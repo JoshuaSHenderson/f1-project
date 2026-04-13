@@ -6,13 +6,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { IDriverRow } from "../DriversChampionship.interfaces"
+import type { DriverRow } from "../DriversChampionship.interfaces"
 
-interface IDriverPointsTableProps {
-  DriverRows: IDriverRow[]
+interface DriverPointsTableProps {
+  driverRows: DriverRow[]
 }
 
-export default function DriverPointsTable(props: IDriverPointsTableProps) {
+export default function DriverPointsTable(props: DriverPointsTableProps) {
   return (
     <div className="w-max">
       <Table className="text-xs">
@@ -30,23 +30,23 @@ export default function DriverPointsTable(props: IDriverPointsTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {props.DriverRows.map((driver) => (
-            <TableRow key={driver.DriverNumber} className="even:bg-muted/30">
+          {props.driverRows.map((driver) => (
+            <TableRow key={driver.driverNumber} className="even:bg-muted/30">
               <TableCell className="font-medium text-foreground">
                 <div className="flex min-w-0 items-center gap-2">
                   <img
-                    src={String(driver.DriverHeadShotUrl)}
-                    alt={driver.DriverName}
+                    src={String(driver.driverHeadshotUrl)}
+                    alt={driver.driverName}
                     className="h-10 w-10 shrink-0 rounded-full object-cover"
                   />
-                  <span className="truncate">{driver.DriverName}</span>
+                  <span className="truncate">{driver.driverName}</span>
                 </div>
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {driver.DriverNumber}
+                {driver.driverNumber}
               </TableCell>
               <TableCell className="text-right font-medium tabular-nums">
-                {driver.DriverPoints}
+                {driver.driverPoints}
               </TableCell>
             </TableRow>
           ))}

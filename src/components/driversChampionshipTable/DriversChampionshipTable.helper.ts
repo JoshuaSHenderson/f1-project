@@ -1,67 +1,62 @@
-import type { IDriver, IDriverChampionship } from "@/types/api.interfaces";
-import type { IFantasyLeague } from "@/types/FantasyLeague.interfaces";
-import type { IDriverRow, IDriversChampionshipRows } from "@/components/driversChampionshipTable/DriversChampionship.interfaces"
+import type { Driver, DriverChampionship } from "@/types/api.interfaces"
+import type { FantasyLeague } from "@/types/FantasyLeague.interfaces"
+import type { DriverRow, DriversChampionshipRows } from "@/components/driversChampionshipTable/DriversChampionship.interfaces"
 
-export function GetDriverChampionshipTableContent(
-    fantasyLeague: IFantasyLeague[],
-    allDrivers: IDriver[],
-    driverChampionship: IDriverChampionship[]
-): IDriversChampionshipRows[] {
+export function getDriverChampionshipTableContent(
+  fantasyLeague: FantasyLeague[],
+  allDrivers: Driver[],
+  driverChampionship: DriverChampionship[]
+): DriversChampionshipRows[] {
+  const driverChampionshipRows: DriversChampionshipRows[] = []
+  fantasyLeague.forEach((team) => {
+    const teamDrivers = getDrivers(team, allDrivers, driverChampionship)
 
-    const driversChamptionshipRows: IDriversChampionshipRows[] = []
-    fantasyLeague.forEach(team => {
+    driverChampionshipRows.push({
+      fantasyTeamName: team.fantasyTeamName,
+      fantasyTeamPrincipal: team.fantasyTeamPrincipal,
+      drivers: teamDrivers,
+      totalPoints: getDriversChampionshipTotalPoints(teamDrivers),
+    })
+  })
 
-        const teamDrivers = GetDrivers(team, allDrivers, driverChampionship)
-
-        driversChamptionshipRows.push({
-            FantasyTeamName: team.FantasyTeamName,
-            FantasyTeamPrincipal: team.FantasyTeamPrincipal,
-            Drivers: teamDrivers,
-            TotalPoints: GetDriversChampionshipTotalPoints(teamDrivers)
-        })
-    });
-
-    return driversChamptionshipRows
+  return driverChampionshipRows
 }
 
-function GetDrivers(
-    fantasyTeam: IFantasyLeague,
-    allDrivers: IDriver[],
-    driverChampionship: IDriverChampionship[]
-): IDriverRow[] {
+function getDrivers(
+  fantasyTeam: FantasyLeague,
+  allDrivers: Driver[],
+  driverChampionship: DriverChampionship[]
+): DriverRow[] {
+  const drivers: DriverRow[] = []
+  fantasyTeam.driverNumbers.forEach((driver) => {
+    const foundDriver = allDrivers.find((d) => d.driver_number == driver)
 
-    const drivers: IDriverRow[] = []
-    fantasyTeam.DriverNumbers.forEach(driver => {
-        const foundDriver = allDrivers.find((d) => d.driver_number == driver)
+    if (!foundDriver) {
+      return
+    }
 
-        if (!foundDriver) {
-            return
-        }
+    const foundDriverPoints = driverChampionship.find(
+      (dc) => dc.driver_number == foundDriver.driver_number
+    )
 
-        const foundDriverPoints = driverChampionship.find((dc) => dc.driver_number == foundDriver.driver_number)
+    const foundDriverAsDriverRow: DriverRow = {
+      driverName: foundDriver.full_name,
+      driverNumber: foundDriver.driver_number,
+      driverPoints: foundDriverPoints ? foundDriverPoints.points_current : 0,
+      driverHeadshotUrl: foundDriver.headshot_url,
+    }
 
-        const foundDriverAsDriverRow: IDriverRow = {
-            DriverName: foundDriver.full_name,
-            DriverNumber: foundDriver.driver_number,
-            DriverPoints: foundDriverPoints ? foundDriverPoints.points_current : 0,
-            DriverHeadShotUrl: foundDriver.headshot_url,
-        }
+    drivers.push(foundDriverAsDriverRow)
+  })
 
-        drivers.push(foundDriverAsDriverRow)
-
-    });
-
-    return drivers
+  return drivers
 }
 
-function GetDriversChampionshipTotalPoints(
-    driversChampionship: IDriverRow[]
-): number {
-    let totalPoints = 0
-    driversChampionship.forEach(driver => {
-        totalPoints += driver.DriverPoints
-    });
+function getDriversChampionshipTotalPoints(driversChampionship: DriverRow[]): number {
+  let totalPoints = 0
+  driversChampionship.forEach((driver) => {
+    totalPoints += driver.driverPoints
+  })
 
-    return totalPoints
-
-};
+  return totalPoints
+}
