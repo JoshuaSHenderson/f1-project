@@ -14,6 +14,7 @@ import type { ISession } from "./types/api.interfaces"
 import type { SessionCircuitResults } from "./types/FantasyLeague.interfaces"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs"
 import TeamsChampionshipTable from "./components/teamsChampionshipTable/TeamsChampionshipTable"
+import FullTeamsChampionshipTable from "./components/fullTeamsChampionshipTable/FullTeamsChampionshipTable"
 
 type AppData = {
   /** Race and Sprint sessions for the current year (deduped by `session_key`). */
@@ -127,6 +128,14 @@ export function App() {
                 TeamChampionship={appData?.teamChampionship ?? []}
                 IsLoading={championshipTableLoading}
               />
+              <FullTeamsChampionshipTable
+                SessionCircuitResults={appData?.sessionResults ?? []}
+                Sessions={appData?.sessions ?? []}
+                Drivers={appData?.drivers ?? []}
+                TeamChampionship={appData?.teamChampionship ?? []}
+                isLoading={championshipTableLoading}
+                isSessionResultsLoading={sessionResultsLoading}
+              ></FullTeamsChampionshipTable>
             </TabsContent>
           </Tabs>
         </div>
