@@ -18,12 +18,12 @@ import {
   DrawerTrigger,
 } from "../ui/drawer"
 import { Button } from "../ui/button"
-import { Badge } from "../ui/badge"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
 import { SkeletonText, TableSkeleton } from "../ui/skeleton"
 import FullTeamsSessionResults from "./fullTeamsRaceResults/FullTeamsRaceResults"
 import { getPostionsValueAndClass } from "@/common/Helpers"
 import PositionTableCell from "../ui/positionTableCell"
+import TeamBadge from "../ui/teamBadge"
 
 interface FullTeamsChampionshipTableProps {
   sessionCircuitResults: SessionCircuitResults[]
@@ -102,16 +102,10 @@ export default function FullTeamsChampionshipTable(
                     </TableCell>
                     {/* Constructor Name */}
                     <TableCell className="bold text-foreground">
-                      <Badge
-                        className="h-10 px-2.5 py-1 text-sm"
-                        style={
-                          matched?.team_colour
-                            ? { backgroundColor: `#${matched.team_colour}` }
-                            : undefined
-                        }
-                      >
-                        {matched?.team_name ?? "—"}
-                      </Badge>
+                      <TeamBadge
+                        team_colour={matched?.team_colour}
+                        team_name={matched?.team_name}
+                      />
                     </TableCell>
                     {/* Results */}
                     <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
@@ -123,7 +117,7 @@ export default function FullTeamsChampionshipTable(
                             </>
                           ) : (
                             <Button variant="default" className="gap-2">
-                              Full Race Results
+                              Race Results
                             </Button>
                           )}
                         </DrawerTrigger>
