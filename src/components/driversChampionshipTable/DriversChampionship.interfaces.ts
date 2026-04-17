@@ -1,17 +1,15 @@
-
-interface IDriverRow {
-    DriverName: string
-    DriverNumber: number
-    DriverPoints: number
-    DriverHeadShotUrl: URL
+interface DriverRow {
+  driverName: string
+  driverNumber: number
+  driverPoints: number
+  driverHeadshotUrl: URL
 }
 
-interface IDriversChampionshipRows {
-    FantasyTeamName: string
-    FantasyTeamPrincipal: string
-    Drivers: IDriverRow[]
-    TotalPoints: number
-
+interface DriversChampionshipRows {
+  fantasyTeamName: string
+  fantasyTeamPrincipal: string
+  drivers: DriverRow[]
+  totalPoints: number
 }
 
-export type { IDriverRow, IDriversChampionshipRows }
+export type { DriverRow, DriversChampionshipRows }

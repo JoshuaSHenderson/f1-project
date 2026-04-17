@@ -1,13 +1,12 @@
-import type { IFantasyLeague } from "@/types/FantasyLeague.interfaces";
+import type { FantasyLeague } from "@/types/FantasyLeague.interfaces"
 
-const EMPTY_FANTASY_LEAGUE: IFantasyLeague[] = [{
-    FantasyTeamPrincipal: "",
-    FantasyTeamName: "",
-    DriverNumbers: [],
-    Teams: []
-}
+const EMPTY_FANTASY_LEAGUE: FantasyLeague[] = [
+  {
+    fantasyTeamPrincipal: "",
+    fantasyTeamName: "",
+    driverNumbers: [],
+    teams: [],
+  },
 ]
-
-
 
 export { EMPTY_FANTASY_LEAGUE }

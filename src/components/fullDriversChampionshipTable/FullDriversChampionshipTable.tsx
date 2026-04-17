@@ -1,8 +1,8 @@
 import { useMemo } from "react"
 import type {
-  IDriver,
-  IDriverChampionship,
-  ISession,
+  Driver,
+  DriverChampionship,
+  Session,
 } from "@/types/api.interfaces"
 import {
   Table,
@@ -26,30 +26,32 @@ import { Badge } from "../ui/badge"
 import FullSessionResults from "./fullRaceResults/fullRaceResults"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
 import { SkeletonText, TableSkeleton } from "../ui/skeleton"
+import PositionTableCell from "../ui/positionTableCell"
+import { getPostionsValueAndClass } from "@/common/Helpers"
 
-interface IFullDriversChampionshipTableProps {
-  SessionCircuitResults: SessionCircuitResults[]
-  Drivers: IDriver[]
-  Sessions: ISession[]
-  DriverChampionship: IDriverChampionship[]
+interface FullDriversChampionshipTableProps {
+  sessionCircuitResults: SessionCircuitResults[]
+  drivers: Driver[]
+  sessions: Session[]
+  driverChampionship: DriverChampionship[]
   isLoading?: boolean
   isSessionResultsLoading?: boolean
 }
 
 export default function FullDriversChampionshipTable(
-  props: IFullDriversChampionshipTableProps
+  props: FullDriversChampionshipTableProps
 ) {
   const driversByNumber = useMemo(
-    () => new Map(props.Drivers.map((d) => [d.driver_number, d])),
-    [props.Drivers]
+    () => new Map(props.drivers.map((d) => [d.driver_number, d])),
+    [props.drivers]
   )
 
   const driverChampionshipRows = useMemo(
     () =>
-      [...props.DriverChampionship].sort(
+      [...props.driverChampionship].sort(
         (a, b) => b.points_current - a.points_current
       ),
-    [props.DriverChampionship]
+    [props.driverChampionship]
   )
 
   return (
@@ -63,7 +65,7 @@ export default function FullDriversChampionshipTable(
         {props.isLoading ? (
           <TableSkeleton
             numberOfColumns={5}
-            numberOfRows={props.Drivers.length > 1 ? props.Drivers.length : 5}
+            numberOfRows={props.drivers.length > 1 ? props.drivers.length : 5}
           />
         ) : (
           <Table>
@@ -89,14 +91,23 @@ export default function FullDriversChampionshipTable(
             <TableBody>
               {driverChampionshipRows.map((driver, index) => {
                 const matched = driversByNumber.get(driver.driver_number)
+                const placesChange = getPostionsValueAndClass(
+                  driver.position_start,
+                  driver.position_current
+                )
                 return (
                   <TableRow
                     key={driver.driver_number}
                     className="even:bg-muted/30"
                   >
+                    {/* Position */}
                     <TableCell className="font-medium text-foreground">
-                      {index + 1}
+                      <PositionTableCell
+                        index={index}
+                        placesChange={placesChange}
+                      />
                     </TableCell>
+                    {/* Driver Name */}
                     <TableCell className="font-medium text-foreground">
                       <div className="flex min-w-0 items-center gap-2">
                         <img
@@ -112,6 +123,7 @@ export default function FullDriversChampionshipTable(
                         </span>
                       </div>
                     </TableCell>
+                    {/* Team Name */}
                     <TableCell className="bold text-foreground">
                       <Badge
                         className="h-10 px-2.5 py-1 text-sm"
@@ -124,6 +136,7 @@ export default function FullDriversChampionshipTable(
                         {matched?.team_name ?? "—"}
                       </Badge>
                     </TableCell>
+                    {/* Results */}
                     <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
                       <Drawer direction="bottom">
                         <DrawerTrigger asChild>
@@ -148,14 +161,15 @@ export default function FullDriversChampionshipTable(
                             </DrawerDescription>
                           </DrawerHeader>
                           <FullSessionResults
-                            Driver={driver}
-                            SessionResults={props.SessionCircuitResults}
-                            Sessions={props.Sessions}
+                            driver={driver}
+                            sessionResults={props.sessionCircuitResults}
+                            sessions={props.sessions}
                             isLoading={props.isSessionResultsLoading}
                           />
                         </DrawerContent>
                       </Drawer>
                     </TableCell>
+                    {/* Total Points */}
                     <TableCell className="text-right font-medium tabular-nums">
                       {driver.points_current}
                     </TableCell>

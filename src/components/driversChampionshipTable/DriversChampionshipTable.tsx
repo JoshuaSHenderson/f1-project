@@ -1,7 +1,7 @@
-import type { IDriver, IDriverChampionship } from "@/types/api.interfaces"
-import type { IFantasyLeague } from "@/types/FantasyLeague.interfaces"
-import { GetDriverChampionshipTableContent } from "./DriversChampionshipTable.helper"
-import type { IDriversChampionshipRows } from "@/components/driversChampionshipTable/DriversChampionship.interfaces"
+import type { Driver, DriverChampionship } from "@/types/api.interfaces"
+import type { FantasyLeague } from "@/types/FantasyLeague.interfaces"
+import { getDriverChampionshipTableContent } from "./DriversChampionshipTable.helper"
+import type { DriversChampionshipRows } from "@/components/driversChampionshipTable/DriversChampionship.interfaces"
 import {
   Table,
   TableBody,
@@ -23,22 +23,22 @@ import {
 import { Button } from "../ui/button"
 import { TableSkeleton } from "../ui/skeleton"
 
-interface IDriverChampionshipTableProps {
-  Drivers: IDriver[]
-  DriverChampionship: IDriverChampionship[]
-  FantasyLeague: IFantasyLeague[]
+interface DriverChampionshipTableProps {
+  drivers: Driver[]
+  driverChampionship: DriverChampionship[]
+  fantasyLeague: FantasyLeague[]
   isLoading?: boolean
 }
 
 export default function DriverChampionshipTable(
-  props: IDriverChampionshipTableProps
+  props: DriverChampionshipTableProps
 ) {
-  const driversDataTableRows: IDriversChampionshipRows[] =
-    GetDriverChampionshipTableContent(
-      props.FantasyLeague,
-      props.Drivers,
-      props.DriverChampionship
-    ).sort((a, b) => b.TotalPoints - a.TotalPoints)
+  const driversDataTableRows: DriversChampionshipRows[] =
+    getDriverChampionshipTableContent(
+      props.fantasyLeague,
+      props.drivers,
+      props.driverChampionship
+    ).sort((a, b) => b.totalPoints - a.totalPoints)
 
   return (
     <Card>
@@ -52,7 +52,7 @@ export default function DriverChampionshipTable(
           <TableSkeleton
             numberOfColumns={5}
             numberOfRows={
-              props.FantasyLeague.length > 1 ? props.FantasyLeague.length : 5
+              props.fantasyLeague.length > 1 ? props.fantasyLeague.length : 5
             }
           />
         ) : (
@@ -79,17 +79,17 @@ export default function DriverChampionshipTable(
             <TableBody>
               {driversDataTableRows.map((team, index) => (
                 <TableRow
-                  key={team.FantasyTeamName}
+                  key={team.fantasyTeamName}
                   className="even:bg-muted/30"
                 >
                   <TableCell className="font-medium text-foreground">
                     {index + 1}
                   </TableCell>
                   <TableCell className="font-medium text-foreground">
-                    {team.FantasyTeamName}
+                    {team.fantasyTeamName}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {team.FantasyTeamPrincipal}
+                    {team.fantasyTeamPrincipal}
                   </TableCell>
                   <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
                     <Drawer direction="right">
@@ -100,19 +100,19 @@ export default function DriverChampionshipTable(
                         <DrawerHeader>
                           <DrawerTitle>Driver points</DrawerTitle>
                           <DrawerDescription>
-                            Breakdown for {team.FantasyTeamName}.
+                            Breakdown for {team.fantasyTeamName}.
                           </DrawerDescription>
                         </DrawerHeader>
                         <DriverPointsTable
-                          DriverRows={[...team.Drivers].sort(
-                            (a, b) => b.DriverPoints - a.DriverPoints
+                          driverRows={[...team.drivers].sort(
+                            (a, b) => b.driverPoints - a.driverPoints
                           )}
                         />
                       </DrawerContent>
                     </Drawer>
                   </TableCell>
                   <TableCell className="text-right font-medium tabular-nums">
-                    {team.TotalPoints}
+                    {team.totalPoints}
                   </TableCell>
                 </TableRow>
               ))}

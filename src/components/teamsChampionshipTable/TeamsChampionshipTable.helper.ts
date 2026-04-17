@@ -1,58 +1,54 @@
-import type { ITeamChampionship } from "@/types/api.interfaces";
-import type { IFantasyLeague } from "@/types/FantasyLeague.interfaces";
+import type { TeamChampionship } from "@/types/api.interfaces"
+import type { FantasyLeague } from "@/types/FantasyLeague.interfaces"
+import type { TeamChampionshipRows } from "./TeamsChampionshipTable.interfaces"
 
 export function getTeamsChampionshipTableContent(
-    fantasyLeague: IFantasyLeague[],
-    teamChampionship: ITeamChampionship[],
-): ITeamChampionshipRows[] {
+  fantasyLeague: FantasyLeague[],
+  teamChampionship: TeamChampionship[]
+): TeamChampionshipRows[] {
+  const teamChampionshipRows: TeamChampionshipRows[] = []
+  fantasyLeague.forEach((fantasyTeam) => {
+    const fantasyTeamTeams: TeamChampionship[] = getTeams(
+      fantasyTeam,
+      teamChampionship
+    )
 
-    const driversChamptionshipRows: ITeamChampionshipRows[] = []
-    fantasyLeague.forEach(fantasyTeam => {
+    teamChampionshipRows.push({
+      fantasyTeamName: fantasyTeam.fantasyTeamName,
+      fantasyTeamPrincipal: fantasyTeam.fantasyTeamPrincipal,
+      teams: fantasyTeamTeams,
+      totalPoints: getTeamChampionshipTotalPoints(fantasyTeamTeams),
+    })
+  })
 
-        const fantasyTeamTeams: ITeamChampionship[] = getTeams(fantasyTeam, teamChampionship)
-
-        driversChamptionshipRows.push({
-            FantasyTeamName: fantasyTeam.FantasyTeamName,
-            FantasyTeamPrincipal: fantasyTeam.FantasyTeamPrincipal,
-            Teams: fantasyTeamTeams,
-            TotalPoints: getTeamChampionshipTotalPoints(fantasyTeamTeams)
-        })
-    });
-
-    return driversChamptionshipRows
+  return teamChampionshipRows
 }
 
-function getTeams(fantasyTeam: IFantasyLeague, teamChampionship: ITeamChampionship[]): ITeamChampionship[] {
-    const fantasyTeams: ITeamChampionship[] = []
-    fantasyTeam.Teams.forEach(team => {
+function getTeams(
+  fantasyTeam: FantasyLeague,
+  teamChampionship: TeamChampionship[]
+): TeamChampionship[] {
+  const fantasyTeams: TeamChampionship[] = []
+  fantasyTeam.teams.forEach((team) => {
+    const foundTeam = teamChampionship.find((t) => t.team_name == team)
 
-        const foundTeam = teamChampionship.find((t) => t.team_name == team)
+    if (!foundTeam) {
+      return
+    }
 
-        if (!foundTeam) {
-            return
-        }
+    fantasyTeams.push(foundTeam)
+  })
 
-        fantasyTeams.push(foundTeam)
-    });
-
-    return fantasyTeams
-}
-
-interface ITeamChampionshipRows {
-    FantasyTeamName: string
-    FantasyTeamPrincipal: string
-    Teams: ITeamChampionship[]
-    TotalPoints: number
+  return fantasyTeams
 }
 
 function getTeamChampionshipTotalPoints(
-    teamChampionship: ITeamChampionship[]
+  teamChampionship: TeamChampionship[]
 ): number {
-    let totalPoints = 0
-    teamChampionship.forEach(team => {
-        totalPoints += team.points_current
-    });
+  let totalPoints = 0
+  teamChampionship.forEach((team) => {
+    totalPoints += team.points_current
+  })
 
-    return totalPoints
-
-};
+  return totalPoints
+}

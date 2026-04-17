@@ -1,5 +1,5 @@
-import type { ITeamChampionship } from "@/types/api.interfaces"
-import type { IFantasyLeague } from "@/types/FantasyLeague.interfaces"
+import type { TeamChampionship } from "@/types/api.interfaces"
+import type { FantasyLeague } from "@/types/FantasyLeague.interfaces"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import {
   Table,
@@ -19,24 +19,28 @@ import {
 } from "../ui/drawer"
 import { Button } from "../ui/button"
 import { getTeamsChampionshipTableContent } from "./TeamsChampionshipTable.helper"
-import type { ITeamChampionshipRows } from "./TeamsChampionShipTable.interfaces"
+import type { TeamChampionshipRows } from "./TeamsChampionshipTable.interfaces"
 import TeamPointsTable from "./teamsPointsTable/TeamPointsTable"
 import { TableSkeleton } from "../ui/skeleton"
 
-interface ITeamsChampionshipTableProps {
-  FantasyLeague: IFantasyLeague[]
-  TeamChampionship: ITeamChampionship[]
-  IsLoading?: boolean
+interface TeamsChampionshipTableProps {
+  fantasyLeague: FantasyLeague[]
+  teamChampionship: TeamChampionship[]
+  isLoading?: boolean
 }
 
 export default function TeamsChampionshipTable(
-  props: ITeamsChampionshipTableProps
+  props: TeamsChampionshipTableProps
 ) {
-  const teamsDataTableRows: ITeamChampionshipRows[] =
+  const teamsDataTableRows: TeamChampionshipRows[] =
     getTeamsChampionshipTableContent(
-      props.FantasyLeague,
-      props.TeamChampionship
-    ).sort((a, b) => b.TotalPoints - a.TotalPoints)
+      props.fantasyLeague,
+      props.teamChampionship
+    ).sort((a, b) => b.totalPoints - a.totalPoints)
+
+  // const placesChange = formatPositionsGainedOrLost(
+  //   getPostionsValueAndClass(team.position_start, team.position_current)
+  // )
 
   return (
     <Card>
@@ -46,10 +50,10 @@ export default function TeamsChampionshipTable(
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {props.IsLoading ? (
+        {props.isLoading ? (
           <TableSkeleton
             numberOfColumns={5}
-            numberOfRows={props.FantasyLeague.length}
+            numberOfRows={props.fantasyLeague.length}
           />
         ) : (
           <Table>
@@ -75,17 +79,17 @@ export default function TeamsChampionshipTable(
             <TableBody>
               {teamsDataTableRows.map((team, index) => (
                 <TableRow
-                  key={team.FantasyTeamName}
+                  key={team.fantasyTeamName}
                   className="even:bg-muted/30"
                 >
                   <TableCell className="font-medium text-foreground">
                     {index + 1}
                   </TableCell>
                   <TableCell className="font-medium text-foreground">
-                    {team.FantasyTeamName}
+                    {team.fantasyTeamName}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {team.FantasyTeamPrincipal}
+                    {team.fantasyTeamPrincipal}
                   </TableCell>
                   <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
                     <Drawer direction="right">
@@ -96,11 +100,11 @@ export default function TeamsChampionshipTable(
                         <DrawerHeader>
                           <DrawerTitle>Team points</DrawerTitle>
                           <DrawerDescription>
-                            Breakdown for {team.FantasyTeamName}.
+                            Breakdown for {team.fantasyTeamName}.
                           </DrawerDescription>
                         </DrawerHeader>
                         <TeamPointsTable
-                          TeamRows={[...team.Teams].sort(
+                          teamRows={[...team.teams].sort(
                             (a, b) => b.points_current - a.points_current
                           )}
                         />
@@ -108,7 +112,7 @@ export default function TeamsChampionshipTable(
                     </Drawer>
                   </TableCell>
                   <TableCell className="text-right font-medium tabular-nums">
-                    {team.TotalPoints}
+                    {team.totalPoints}
                   </TableCell>
                 </TableRow>
               ))}
