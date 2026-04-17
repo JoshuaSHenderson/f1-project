@@ -7,4 +7,4 @@ interface TeamChampionshipRows {
   totalPoints: number
 }
 
-export type { TeamChampionshipRows }
+export type { TeamChampionshipRows } 
