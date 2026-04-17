@@ -22,7 +22,8 @@ import { Badge } from "../ui/badge"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
 import { SkeletonText, TableSkeleton } from "../ui/skeleton"
 import FullTeamsSessionResults from "./fullTeamsRaceResults/FullTeamsRaceResults"
-import { cn } from "@/lib/utils"
+import { getPostionsValueAndClass } from "@/common/Helpers"
+import PositionTableCell from "../ui/positionTableCell"
 
 interface FullTeamsChampionshipTableProps {
   sessionCircuitResults: SessionCircuitResults[]
@@ -74,9 +75,6 @@ export default function FullTeamsChampionshipTable(
                 <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Results
                 </TableHead>
-                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                  Places Gained/Loss
-                </TableHead>
                 <TableHead className="text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                   Total Points
                 </TableHead>
@@ -88,15 +86,19 @@ export default function FullTeamsChampionshipTable(
                   (d) => d.team_name === team.team_name
                 )
                 const matched = matchedDrivers[0]
-                const placesChange = formatPositionsGainedOrLost(
-                  getPositionsGainedOrLost(team)
+                const placesChange = getPostionsValueAndClass(
+                  team.position_start,
+                  team.position_current
                 )
 
                 return (
                   <TableRow key={team.team_name} className="even:bg-muted/30">
                     {/* Position */}
                     <TableCell className="font-medium text-foreground">
-                      {index + 1}
+                      <PositionTableCell
+                        index={index}
+                        placesChange={placesChange}
+                      />
                     </TableCell>
                     {/* Constructor Name */}
                     <TableCell className="bold text-foreground">
@@ -141,18 +143,6 @@ export default function FullTeamsChampionshipTable(
                         </DrawerContent>
                       </Drawer>
                     </TableCell>
-                    {/*Pos Gain*/}
-                    <TableCell className="max-w-xs text-sm whitespace-normal">
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "h-7 min-w-9 justify-center border px-2.5 text-xs font-medium tabular-nums",
-                          placesChange.className
-                        )}
-                      >
-                        {placesChange.label}
-                      </Badge>
-                    </TableCell>
                     {/* Total Points */}
                     <TableCell className="text-left font-medium tabular-nums">
                       {team.points_current}
@@ -166,32 +156,4 @@ export default function FullTeamsChampionshipTable(
       </CardContent>
     </Card>
   )
-}
-
-function getPositionsGainedOrLost(teamChampionship: TeamChampionship): number {
-  return teamChampionship.position_start - teamChampionship.position_current
-}
-
-function formatPositionsGainedOrLost(change: number): {
-  label: string
-  className: string
-} {
-  if (!Number.isFinite(change) || change === 0) {
-    return {
-      label: "—",
-      className: "border-border bg-muted/80 text-muted-foreground font-normal",
-    }
-  }
-  if (change > 0) {
-    return {
-      label: `+${change}`,
-      className:
-        "border-emerald-500/40 bg-emerald-500/15 text-emerald-900 dark:border-emerald-400/35 dark:bg-emerald-500/20 dark:text-emerald-50",
-    }
-  }
-  return {
-    label: String(change),
-    className:
-      "border-red-500/40 bg-red-500/15 text-red-900 dark:border-red-400/35 dark:bg-red-500/20 dark:text-red-50",
-  }
 }

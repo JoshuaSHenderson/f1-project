@@ -38,6 +38,10 @@ export default function TeamsChampionshipTable(
       props.teamChampionship
     ).sort((a, b) => b.totalPoints - a.totalPoints)
 
+  // const placesChange = formatPositionsGainedOrLost(
+  //   getPostionsValueAndClass(team.position_start, team.position_current)
+  // )
+
   return (
     <Card>
       <CardHeader className="text-center">

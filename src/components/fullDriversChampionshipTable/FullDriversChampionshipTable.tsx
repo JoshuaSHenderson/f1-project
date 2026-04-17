@@ -1,5 +1,9 @@
 import { useMemo } from "react"
-import type { Driver, DriverChampionship, Session } from "@/types/api.interfaces"
+import type {
+  Driver,
+  DriverChampionship,
+  Session,
+} from "@/types/api.interfaces"
 import {
   Table,
   TableBody,
@@ -22,6 +26,8 @@ import { Badge } from "../ui/badge"
 import FullSessionResults from "./fullRaceResults/fullRaceResults"
 import type { SessionCircuitResults } from "@/types/FantasyLeague.interfaces"
 import { SkeletonText, TableSkeleton } from "../ui/skeleton"
+import PositionTableCell from "../ui/positionTableCell"
+import { getPostionsValueAndClass } from "@/common/Helpers"
 
 interface FullDriversChampionshipTableProps {
   sessionCircuitResults: SessionCircuitResults[]
@@ -85,14 +91,23 @@ export default function FullDriversChampionshipTable(
             <TableBody>
               {driverChampionshipRows.map((driver, index) => {
                 const matched = driversByNumber.get(driver.driver_number)
+                const placesChange = getPostionsValueAndClass(
+                  driver.position_start,
+                  driver.position_current
+                )
                 return (
                   <TableRow
                     key={driver.driver_number}
                     className="even:bg-muted/30"
                   >
+                    {/* Position */}
                     <TableCell className="font-medium text-foreground">
-                      {index + 1}
+                      <PositionTableCell
+                        index={index}
+                        placesChange={placesChange}
+                      />
                     </TableCell>
+                    {/* Driver Name */}
                     <TableCell className="font-medium text-foreground">
                       <div className="flex min-w-0 items-center gap-2">
                         <img
@@ -108,6 +123,7 @@ export default function FullDriversChampionshipTable(
                         </span>
                       </div>
                     </TableCell>
+                    {/* Team Name */}
                     <TableCell className="bold text-foreground">
                       <Badge
                         className="h-10 px-2.5 py-1 text-sm"
@@ -120,6 +136,7 @@ export default function FullDriversChampionshipTable(
                         {matched?.team_name ?? "—"}
                       </Badge>
                     </TableCell>
+                    {/* Results */}
                     <TableCell className="max-w-xs text-sm whitespace-normal text-muted-foreground">
                       <Drawer direction="bottom">
                         <DrawerTrigger asChild>
@@ -152,6 +169,7 @@ export default function FullDriversChampionshipTable(
                         </DrawerContent>
                       </Drawer>
                     </TableCell>
+                    {/* Total Points */}
                     <TableCell className="text-right font-medium tabular-nums">
                       {driver.points_current}
                     </TableCell>
